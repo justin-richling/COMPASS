@@ -119,8 +119,8 @@ def register_colormaps():
     for name, fname in custom_maps.items():
         try:
             cmap = load_colormap_from_csv(fname, name)
-            cm.register_cmap(name, cmap)
+            mpl.register_cmap(name, cmap)
         except Exception as e:
             print(f"Failed to load colormap {name}: {e}")
     #plt.register_cmap("nesdis_ir", IR_cmap)
-    cm.register_cmap("nesdis_ir", IR_cmap)
+    mpl.register_cmap("nesdis_ir", IR_cmap)
