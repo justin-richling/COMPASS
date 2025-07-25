@@ -6,7 +6,7 @@ authors = [{name = "Justin Richling", email = "richling@ucar.edu"}]
 dependencies = [
     "xarray",
     "dask",
-    "matplotlib",
+    "matplotlib>=3.5.0",
     "cartopy",
     "numpy",
     "pandas",
@@ -14,7 +14,7 @@ dependencies = [
     "cf_xarray",
     "xesmf",
     "xskillscore",
-    "satpy",
+    "satpy>=0.55.0",
 ]
 
 [build-system]
