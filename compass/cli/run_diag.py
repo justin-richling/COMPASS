@@ -34,7 +34,7 @@ from compass.core.colormap_loader import register_colormaps
 def main():
     #register_colormaps()
 
-    from diagnostics import satellite_plot
+    from compass.diagnostics import satellite_plot
     satellite_plot()
 
     # If no config passed, just print registered colormaps and exit
