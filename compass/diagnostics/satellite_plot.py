@@ -123,6 +123,11 @@ def main():
         data = var.values
         print("data shape:", data.shape)
 
+        from satpy.resample import get_area_def
+        area_def = get_area_def('lat_lon')  # or your specific lat/lon area
+        scn = scn.resample(area_def)
+        var = scn[prod]
+
         if prod == "B13":
             cmap = "viirs_ir_default" #IR_cmap
             vmin=158
