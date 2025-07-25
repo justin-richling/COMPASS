@@ -24,9 +24,6 @@ build-backend = "setuptools.build_meta"
 [project.scripts]
 compass = "cli.run_diag:main"
 
-[tool.setuptools]
-packages = { find = {} }
-
 [tool.setuptools.packages.find]
 include = ["compass*"]
 exclude = ["notebooks*"]
