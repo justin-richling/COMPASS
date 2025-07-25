@@ -1,6 +1,6 @@
 # cli/run_diag.py
 
-import sys
+"""import sys
 import importlib
 from compass.core.config import Config
 
@@ -23,4 +23,29 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python -m climdiag.cli.run_diag <config.yaml>")
         sys.exit(1)
-    main(sys.argv[1])
+    main(sys.argv[1])"""
+
+# cli/run_diag.py
+
+import sys
+import matplotlib.pyplot as plt
+from compass.core.colormap_loader import register_colormaps
+
+def main():
+    register_colormaps()
+
+    # If no config passed, just print registered colormaps and exit
+    if len(sys.argv) < 2:
+        print("No config file provided. Registered colormaps are:")
+        print(plt.colormaps())
+        return
+
+    config_path = sys.argv[1]
+    print(f"Config path provided: {config_path}")
+    # Here you would load and run diagnostics with your config
+    # For now just print a placeholder
+    print("Would load config and run diagnostics here.")
+
+if __name__ == "__main__":
+    main()
+
