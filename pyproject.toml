@@ -22,7 +22,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-compass = "cli.run_diag:main"
+compass = "compass.cli.run_diag:main"
 
 [tool.setuptools.packages.find]
 include = ["compass*"]
