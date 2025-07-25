@@ -116,7 +116,7 @@ def main():
             cmap = "viirs_ir_default" #IR_cmap
             vmin=158
             vmax=330
-            im = ax.imshow(var,
+            im = ax.imshow(var.values,
                 transform=abi_crs,
                 cmap=cmap,
                     vmin=vmin,
