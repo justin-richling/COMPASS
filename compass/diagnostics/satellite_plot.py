@@ -112,6 +112,17 @@ def main():
                     #vmax=vmax,
                             extent=(var.x[0], var.x[-1], var.y[-1], var.y[0]),origin='upper')
         """
+        print("var dims:", var.dims)
+        print("var shape:", var.shape)
+        print("var.x coords:", var.x.values)
+        print("var.y coords:", var.y.values)
+
+        extent = (float(var.x.min()), float(var.x.max()), float(var.y.min()), float(var.y.max()))
+        print("Extent:", extent)
+
+        data = var.values
+        print("data shape:", data.shape)
+
         if prod == "B13":
             cmap = "viirs_ir_default" #IR_cmap
             vmin=158
