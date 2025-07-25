@@ -39,7 +39,7 @@ red.append( [ 1.0, 0.0, 0.0 ] )
 green.append( [ 1.0, 0.0, 0.0 ] )
 blue.append( [ 1.0, 0.0, 0.0 ] )
 cdict = {'red': red, 'green': green, 'blue': blue}
-ctbl = LinearSegmentedColormap('custom', cdict)
+ctbl = mpl.colors.LinearSegmentedColormap('custom', cdict)
 
 cdict = {'red': ((0.0, 0.0, 0.0),
                  (.001, 1.00, 1.00),
