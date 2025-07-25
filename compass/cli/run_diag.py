@@ -32,12 +32,13 @@ import matplotlib.pyplot as plt
 from compass.core.colormap_loader import register_colormaps
 
 def main():
-    register_colormaps()
+    #register_colormaps()
+    import satpy
 
     # If no config passed, just print registered colormaps and exit
     if len(sys.argv) < 2:
-        print("No config file provided. Registered colormaps are:")
-        print(plt.colormaps())
+        print("No config file provided")
+        #print(plt.colormaps())
         return
 
     config_path = sys.argv[1]
