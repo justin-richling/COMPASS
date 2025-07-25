@@ -12,9 +12,11 @@ from compass import colormaps  # this lets us access the files as package resour
 def load_colormap_from_csv(file_name, name=None):
     with pkg_resources.open_text(colormaps, file_name) as f:
         reader = csv.reader(f)
+        next(reader)  # Skip header
         rgb = [list(map(float, row)) for row in reader if row and not row[0].startswith("#")]
         cmap = ListedColormap(rgb, name=name or file_name)
         return cmap
+
 
 
 # NESDIS Satellite IR Colormap
@@ -113,14 +115,21 @@ def register_colormaps():
     # List all your custom colormap files here
     custom_maps = {
         "viirs_ir_default": "viirs_ir_default.csv",
-        "diverging_cmap": "diverging_map.csv"
+        #"diverging_cmap": "diverging_map.csv"
     }
 
     for name, fname in custom_maps.items():
         try:
             cmap = load_colormap_from_csv(fname, name)
-            mpl.register_cmap(name, cmap)
+            #cm.register_cmap(name, cmap)
+            mpl.colormaps.register(cmap,name=name)
         except Exception as e:
             print(f"Failed to load colormap {name}: {e}")
     #plt.register_cmap("nesdis_ir", IR_cmap)
-    mpl.register_cmap("nesdis_ir", IR_cmap)
+mpl.colormaps.register(IR_cmap, name="nesdis_ir")
+
+"""fig = plt.figure(figsize=(8, 3))
+ax1 = fig.add_axes([0.05, 0.80, 0.9, 0.15])
+mpl.colorbar.ColorbarBase(ax1, cmap="viirs_ir_default",
+                                    orientation='horizontal')
+plt.show()"""
