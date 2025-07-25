@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 import numpy as np
 import importlib.resources as pkg_resources
@@ -118,7 +119,8 @@ def register_colormaps():
     for name, fname in custom_maps.items():
         try:
             cmap = load_colormap_from_csv(fname, name)
-            plt.register_cmap(name, cmap)
+            cm.register_cmap(name, cmap)
         except Exception as e:
             print(f"Failed to load colormap {name}: {e}")
-    plt.register_cmap("nesdis_ir", IR_cmap)
+    #plt.register_cmap("nesdis_ir", IR_cmap)
+    cm.register_cmap("nesdis_ir", IR_cmap)
