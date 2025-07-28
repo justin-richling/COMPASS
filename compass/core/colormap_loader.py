@@ -13,6 +13,7 @@ from pathlib import Path
 def load_colormap_from_csv(file_name, name=None):
     print("file_name",file_name)
     with pkg_resources.open_text(colormaps, file_name) as f:
+        print("f",f)
         reader = csv.reader(f)
         next(reader)  # Skip header
         rgb = [list(map(float, row)) for row in reader if row and not row[0].startswith("#")]
