@@ -7,6 +7,7 @@ from matplotlib import patheffects
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from matplotlib.patches import Rectangle
+import xarray as xr
 
 
 def main():
@@ -71,19 +72,17 @@ def main():
                 coords['y'] = h2i_init_ds[lat_name]
 
             if not all([
-                has_time(h2i_init_ds, target_time),
-                has_time(h2i_ds, target_time),
-                has_time(h0a_ds, target_time),
+                has_time(merra_ds, target_time),
+                has_time(h1a_ds, target_time),
                 #has_time(h0a_ds.T, target_time)
                 ]):
                 print("NO TIMES EH")
                 return
-
-            h2i_init_ds_sfc = h2i_init_ds[var_name].sel(lev=lev,method='nearest').sel(time=target_time)
-            h2i_ds_sfc = h2i_ds[var_name].sel(lev=lev,method='nearest').sel(time=target_time)
-            h0a_ds_sfc = h0a_ds[var_name].sel(lev=lev,method='nearest').sel(time=target_time)
-            #h1a_target_ds_sfc = h2i_ds.Target_T.sel(lev=lev,method='nearest').sel(time=target_time)
-            #h1a_nudge_ds_sfc = h2i_ds.Nudge_T.sel(lev=lev,method='nearest').sel(time=target_time)
+            merra_ds = xr.open_dataset('/glade/work/richling/cesm-diagnostics/COMPASS/merra2_12012017-02282018_fixed.nc')
+            merra_ds_sfc = merra_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
+            #h1a_ds_sfc = h1a_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
+            h1a_target_ds_sfc = h1a_ds.Target_T.sel(lev=lev,method='nearest').sel(time=target_time)
+            #h1a_nudge_ds_sfc = h1a_ds.Nudge_T.sel(lev=lev,method='nearest').sel(time=target_time)
             #h0a_ds_sfc = h0a_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
 
             #time_part = f"{time_indices[time_idx]}" if time_idx is not None else "notime"
@@ -108,7 +107,7 @@ def main():
                 #    pass
                 
                 # === Plotting ===
-                fig, axes = plt.subplots(1, 4, figsize=(15, 5), subplot_kw={'projection': ccrs.PlateCarree()})
+                fig, axes = plt.subplots(1, 3, figsize=(15, 5), subplot_kw={'projection': ccrs.PlateCarree()})
             
                 # Remove y-axis labels/ticks for all but first subplot
                 #axes[1,0].set_ylabel("Latitude", labelpad=40)
@@ -119,92 +118,38 @@ def main():
                 axes[0].set_yticklabels([])
                 axes[0].set_yticks([])
             
-                #h0a_ds.T.sel(lev=992,method='nearest').sel(time=target_time,method='nearest')
+                c0cm = h1a_target_ds_sfc.plot.pcolormesh(
+                    ax=axes[0],
+                    transform=ccrs.PlateCarree(),
+                    cmap="coolwarm",
+                    vmin=270,
+                    vmax=300,
+                    #cbar_kwargs={'label': f"{var_name} ({h0a_ds.attrs.get('units', '')})"},
+                    add_colorbar=False,  # We'll add manually
+                    **coords
+                )
+                axes[0].set_title(f"CESM: Target_{var_name} @ {str(h1a_target_ds_sfc['time'].values)}\nlev={lev_r} {lev_unit}")
+                cbar = axes[0].figure.colorbar(c0cm, ax=axes[0], orientation='vertical', shrink=shrink, pad=pad)
+                cbar.set_label(f"({h1a_ds.T.attrs.get('units', '')})")
 
-                #if lev_r in minmax_dict:
-                if 2==1:
-                    #min = minmax_dict[lev_r][0]
-                    #max = minmax_dict[lev_r][-1]
-            
-                    c0cm = h2i_init_ds_sfc.plot.pcolormesh(
-                        ax=axes[0],
-                        transform=ccrs.PlateCarree(),
-                        cmap="coolwarm",
-                        #vmin=min,
-                        #vmax=max,
-                        #cbar_kwargs={'label': f"{var_name} ({h0a_ds.attrs.get('units', '')})"},
-                        add_colorbar=False,  # We'll add manually
-                        **coords
-                    )
-                    axes[0].set_title(f"CESM Init: {var_name} @ {str(h2i_init_ds_sfc['time'].values)}\nlev={lev_r} {lev_unit}")
-                    cbar = axes[0].figure.colorbar(c0cm, ax=axes[0], orientation='vertical', shrink=shrink, pad=pad)
-                    cbar.set_label(f"({h2i_init_ds.T.attrs.get('units', '')})")
-        
-                    mcm = h2i_ds_sfc.plot.pcolormesh(
-                        ax=axes[1],
-                        transform=ccrs.PlateCarree(),
-                        cmap="coolwarm",
-                        #vmin=min,
-                        #vmax=max,
-                        #cbar_kwargs={'label': f"{var_name} ({merra_ds.attrs.get('units', '')})"},
-                        add_colorbar=False,  # We'll add manually
-                        **coords
-                    )
-                    axes[1].set_title(f"CESM: {var_name} @ {str(time_part)}\nlev={lev_r} {lev_unit}")
-                    # Custom colorbar matching height of axes
-                    cbar = axes[1].figure.colorbar(mcm, ax=axes[1], orientation='vertical', shrink=shrink, pad=pad)
-                else:
-                    if var_name == "T":
-                        min = 220
-                        max = 310
-                    if var_name == "Q":
-                        min = 0
-                        max = 0.018
-                    c0cm = h2i_init_ds_sfc.plot.pcolormesh(
-                        ax=axes[0],
-                        transform=ccrs.PlateCarree(),
-                        cmap="coolwarm",
-                        vmin=min,
-                        vmax=max,
-                        #cbar_kwargs={'label': f"{var_name} ({h0a_ds.attrs.get('units', '')})"},
-                        add_colorbar=False,  # We'll add manually
-                        **coords
-                    )
-                    axes[0].set_title(f"CESM Init: {var_name} @ {str(h2i_init_ds_sfc['time'].values)}\nlev={lev_r} {lev_unit}")
-                    cbar = axes[0].figure.colorbar(c0cm, ax=axes[0], orientation='vertical', shrink=shrink, pad=pad)
-                    cbar.set_label(f"({h2i_init_ds.T.attrs.get('units', '')})")
-            
-                    mcm = h2i_ds_sfc.plot.pcolormesh(
-                        ax=axes[1],
-                        transform=ccrs.PlateCarree(),
-                        cmap="coolwarm",
-                        vmin=min,
-                        vmax=max,
-                        #cbar_kwargs={'label': f"{var_name} ({merra_ds.attrs.get('units', '')})"},
-                        add_colorbar=False,  # We'll add manually
-                        **coords
-                    )
-                    axes[1].set_title(f"CESM: {var_name} @ {str(time_part)}\nlev={lev_r} {lev_unit}")
-                    # Custom colorbar matching height of axes
-                    cbar = axes[1].figure.colorbar(mcm, ax=axes[1], orientation='vertical', shrink=shrink, pad=pad)
 
-                    subset = h0a_ds_sfc.plot.pcolormesh(
-                        ax=axes[3],
-                        transform=ccrs.PlateCarree(),
-                        cmap="coolwarm",
-                        vmin=min,
-                        vmax=max,
-                        #cbar_kwargs={'label': f"{var_name} ({merra_ds.attrs.get('units', '')})"},
-                        add_colorbar=False,  # We'll add manually
-                        **coords
-                    )
-                    axes[3].set_title(f"CESM Subset: {var_name} @ {str(time_part)}\nlev={lev_r} {lev_unit}")
-                    # Custom colorbar matching height of axes
-                    cbar = axes[3].figure.colorbar(subset, ax=axes[3], orientation='vertical', shrink=shrink, pad=pad)
-                
-                cbar.set_label(f"({h0a_ds.T.attrs.get('units', '')})")
 
-                diff = h2i_init_ds_sfc - h2i_ds_sfc
+                mcm = merra_ds_sfc.plot.pcolormesh(
+                    ax=axes[1],
+                    transform=ccrs.PlateCarree(),
+                    cmap="coolwarm",
+                    vmin=270,
+                    vmax=300,
+                    #cbar_kwargs={'label': f"{var_name} ({merra_ds.attrs.get('units', '')})"},
+                    add_colorbar=False,  # We'll add manually
+                    **coords
+                )
+                axes[1].set_title(f"MERRA2: {var_name} @ {str(merra_ds_sfc['time'].values)}\nlev={lev_r} {lev_unit}")
+                # Custom colorbar matching height of axes
+                cbar = axes[1].figure.colorbar(mcm, ax=axes[1], orientation='vertical', shrink=shrink, pad=pad)
+                cbar.set_label(f"({merra_ds.T.attrs.get('units', '')})")
+
+                diff = h1a_target_ds_sfc - merra_ds_sfc
                 c0cm_target = diff.plot.pcolormesh(
                     ax=axes[2],
                     transform=ccrs.PlateCarree(),
@@ -215,10 +160,10 @@ def main():
                     add_colorbar=False,  # We'll add manually
                     **coords
                 )
-                axes[2].set_title(f"CESM Init minus CESM - {var_name} @ {str(time_part)}\nlev={lev_r} {lev_unit}")
+                axes[2].set_title(f"CESM Target_{var_name} minus MERRA2 {var_name}\nlev={lev_r} {lev_unit}")
                 # Custom colorbar matching height of axes
                 cbar = axes[2].figure.colorbar(c0cm_target, ax=axes[2], orientation='vertical', shrink=shrink, pad=pad)
-                cbar.set_label(f"({h2i_ds.T.attrs.get('units', '')})")
+                cbar.set_label(f"({h1a_target_ds_sfc.attrs.get('units', '')})")
 
                 # Flatten the 2D array of axes for easy iteration
                 #for ax in axes.flat:
