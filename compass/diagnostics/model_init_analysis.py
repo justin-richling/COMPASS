@@ -42,7 +42,7 @@ def main():
         #lev_r = int(h2i_ds['lev'].values[-1])
         var_name = "T"
         var_names = ["T","Q"]
-        var_names = ["Q"]
+        #var_names = ["Q"]
         shrink = 0.625
         pad = 0.02
         #time_idx = 5
