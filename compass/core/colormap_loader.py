@@ -8,6 +8,7 @@ import numpy as np
 import importlib.resources as pkg_resources
 import csv
 from compass import colormaps  # this lets us access the files as package resources
+from pathlib import Path
 
 def load_colormap_from_csv(file_name, name=None):
     with pkg_resources.open_text(colormaps, file_name) as f:
@@ -117,16 +118,23 @@ def register_colormaps():
         "viirs_ir_default": "viirs_ir_default.csv",
         #"diverging_cmap": "diverging_map.csv"
     }
-
-    for name, fname in custom_maps.items():
+    # Import the subpackage
+    import compass.colormaps.csv as cmap_csv_pkg
+    #for fname in compass.colormaps.csv:
+    # List all CSVs in the package
+    with pkg_resources.files(cmap_csv_pkg) as csv_dir:
+        for path in csv_dir.iterdir():
+            if path.suffix == '.csv':
+                name = path.stem
         try:
-            cmap = load_colormap_from_csv(fname, name)
+            cmap = load_colormap_from_csv(Path(path).parts[-1], name)
             #cm.register_cmap(name, cmap)
             mpl.colormaps.register(cmap,name=name)
         except Exception as e:
             print(f"Failed to load colormap {name}: {e}")
     #plt.register_cmap("nesdis_ir", IR_cmap)
 mpl.colormaps.register(IR_cmap, name="nesdis_ir")
+
 
 """fig = plt.figure(figsize=(8, 3))
 ax1 = fig.add_axes([0.05, 0.80, 0.9, 0.15])
