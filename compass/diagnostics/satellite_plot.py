@@ -124,7 +124,7 @@ def main():
         print("data shape:", data.shape)
 
         if prod == "B13":
-            cmap = "viirs_ir_default" #IR_cmap
+            cmap = "nesdis_ir" #IR_cmap
             vmin=158
             vmax=330
             im = ax.imshow(var,
