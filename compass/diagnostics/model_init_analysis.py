@@ -14,7 +14,7 @@ def main():
     init_cam_path = Path(f"/glade/derecho/scratch/richling/{init_casenl_name}/run/")
     h0a_init_ds, h1a_init_ds, h2i_init_ds = get_cam_ds(init_casenl_path, init_cam_path)
 
-    case_name = "F2000climo.f09_f09_mg17.window.exp.6hrInit.R13.003" #exp_casenames[3]
+    case_name = "F2000climo.f09_f09_mg17.window.exp.3hrInit.R13.003" #exp_casenames[3]
     print(case_name)
     casenl_path = f"/glade/derecho/scratch/richling/cases/{case_name}/user_nl_cam"
     cam_path = f"/glade/derecho/scratch/richling/cases/{case_name}/run/"
