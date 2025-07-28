@@ -1,5 +1,5 @@
-
 import xarray as xr
+from compass.core.utils import load_and_search_user_nl
 def get_cam_ds(usernl_path,cam_path):
     search_text, full_text = load_and_search_user_nl(usernl_path,"fincl1lonlat")
     print(search_text)
