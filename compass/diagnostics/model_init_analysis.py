@@ -20,7 +20,7 @@ def main():
     init_cam_path = Path(f"/glade/derecho/scratch/richling/{init_casenl_name}/run/")
     h0a_init_ds, h1a_init_ds, h2i_init_ds = get_cam_ds(init_casenl_path, init_cam_path)
 
-    print(h0a_init_ds, h1a_init_ds, h2i_init_ds)
+    #print(h0a_init_ds, h1a_init_ds, h2i_init_ds)
 
     """case_name = "F2000climo.f09_f09_mg17.window.exp.6hrInit.R13.002" #exp_casenames[3]
     print(case_name)
@@ -35,7 +35,7 @@ def main():
 
     # Loop over time and lev indices
     time_indices = range(len(h0a_init_ds['time'])) if 'time' in h0a_init_ds.dims else [None]
-    lev_indices = range(len(h0a_init_ds['lev'])) if 'lev' in h0ah0a_init_ds_ds.dims else [None]
+    lev_indices = range(len(h0a_init_ds['lev'])) if 'lev' in h0a_init_ds.dims else [None]
 
     #case_name = "nudged-socrates-inithist-002-window"  # Change this to your case
     #image_dir = Path(f"plots/{case_name}/MERRA_T_minus_T/")
