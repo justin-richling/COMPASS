@@ -123,9 +123,11 @@ def register_colormaps():
     #for fname in compass.colormaps.csv:
     # List all CSVs in the package
     with pkg_resources.files(cmap_csv_pkg) as csv_dir:
+        print("csv_dir",csv_dir)
         for path in csv_dir.iterdir():
             if path.suffix == '.csv':
                 name = path.stem
+        print("csv names?",Path(path).parts[-1], name)
         try:
             cmap = load_colormap_from_csv(Path(path).parts[-1], name)
             #cm.register_cmap(name, cmap)
