@@ -132,7 +132,7 @@ def main():
                 )
                 axes[0].set_title(f"CESM: Target_{var_name} @ {str(h1a_target_ds_sfc['time'].values)}\nlev={lev_r} {lev_unit}")
                 cbar = axes[0].figure.colorbar(c0cm, ax=axes[0], orientation='vertical', shrink=shrink, pad=pad)
-                cbar.set_label(f"({h1a_ds.T.attrs.get('units', '')})")
+                cbar.set_label(f"({h1a_init_ds.T.attrs.get('units', '')})")
 
 
 
@@ -217,8 +217,8 @@ def main():
         
 
 
-    for time in h2i_ds['time'].values:
-        for lev in h2i_ds.sel(lev=slice(700,1000))['lev'].values:
+    for time in h1a_init_ds['time'].values:
+        for lev in h1a_init_ds.sel(lev=slice(700,1000))['lev'].values:
             for var in var_names:
                 plot_map_multi_var_new(var, time, lev=lev)
         #for lev_idx in lev_indices:
