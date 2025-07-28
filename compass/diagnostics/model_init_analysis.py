@@ -8,7 +8,12 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from matplotlib.patches import Rectangle
 
+
 def main():
+
+    def has_time(da, time_val):
+        return any(t == time_val for t in da['time'].values)
+
     init_casenl_name = "nudged-socrates-inithist-004-window"
     init_casenl_path = f"/glade/derecho/scratch/richling/{init_casenl_name}/user_nl_cam"
     init_cam_path = Path(f"/glade/derecho/scratch/richling/{init_casenl_name}/run/")
@@ -16,7 +21,7 @@ def main():
 
     print(h0a_init_ds, h1a_init_ds, h2i_init_ds)
 
-    case_name = "F2000climo.f09_f09_mg17.window.exp.24hrInit.R13.002" #exp_casenames[3]
+    case_name = "F2000climo.f09_f09_mg17.window.exp.18hrInit.R13.002" #exp_casenames[3]
     print(case_name)
     casenl_path = f"/glade/derecho/scratch/richling/cases/{case_name}/user_nl_cam"
     cam_path = f"/glade/derecho/scratch/richling/cases/{case_name}/run/"
@@ -65,6 +70,13 @@ def main():
                 coords['x'] = h2i_init_ds[lon_name]
                 coords['y'] = h2i_init_ds[lat_name]
 
+            if not all([
+                has_time(h2i_init_ds, target_time),
+                has_time(h2i_ds, target_time),
+                has_time(h0a_ds, target_time),
+                #has_time(h0a_ds.T, target_time)
+                ]):
+                return
 
             h2i_init_ds_sfc = h2i_init_ds[var_name].sel(lev=lev,method='nearest').sel(time=target_time)
             h2i_ds_sfc = h2i_ds[var_name].sel(lev=lev,method='nearest').sel(time=target_time)
