@@ -14,21 +14,4 @@ mpl.colorbar.ColorbarBase(ax1, cmap="viirs_ir_default",
 plt.show()
 """
 
-# mypackage/__init__.py
-
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-import numpy as np
-import importlib.resources as pkg_resources  # For loading files inside packages
-
-# Example using pre-saved .npy arrays
-from . import colormaps  # your subpackage or folder with .npy files
-
-def register_custom_colormaps():
-    for name in colormaps.list_available():  # Custom function you write
-        data = colormaps.load_colormap(name)  # Loads the .npy file as array
-        cmap = ListedColormap(data, name=name)
-        plt.register_cmap(name=name, cmap=cmap)
-
-register_custom_colormaps()
 
