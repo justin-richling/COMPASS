@@ -62,11 +62,11 @@ def main():
                     820:[225,300],
                     976:[230,310]}
 
-        def plot_map_multi_var_new(var_name, target_time, lev):
+        def plot_map_multi_var_new(var_name, target_time, image_dir, lev):
 
-            image_dir = Path(f"plots/init_case_vs_merra/{var_name}/")
+            """image_dir = Path(f"plots/init_case_vs_merra/{var_name}/")
             if not image_dir.is_dir():
-                image_dir.mkdir(parents=True)
+                image_dir.mkdir(parents=True)"""
                     
             coords = {}
             if lat_name and lon_name and h2i_init_ds[lat_name].ndim == 2:
@@ -220,7 +220,10 @@ def main():
     for time in h1a_init_ds['time'].values:
         for lev in h1a_init_ds.sel(lev=slice(700,1000))['lev'].values:
             for var in var_names:
-                plot_map_multi_var_new(var, time, lev=lev)
+                image_dir = Path(f"plots/init_case_vs_merra/{var_name}/")
+                if not image_dir.is_dir():
+                    image_dir.mkdir(parents=True)
+                plot_map_multi_var_new(var, time, image_dir, lev=lev)
         #for lev_idx in lev_indices:
             #plot_map_multi_var(my_vars, time_idx, -1)
     print("All Done!")
