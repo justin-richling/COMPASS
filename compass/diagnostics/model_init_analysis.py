@@ -22,8 +22,8 @@ def main():
 
 
     # Loop over time and lev indices
-    time_indices = range(len(h2i_ds['time'])) if 'time' in h2i_ds.dims else [None]
-    lev_indices = range(len(h2i_ds['lev'])) if 'lev' in h2i_ds.dims else [None]
+    time_indices = range(len(h0a_ds['time'])) if 'time' in h0a_ds.dims else [None]
+    lev_indices = range(len(h0a_ds['lev'])) if 'lev' in h0a_ds.dims else [None]
 
     #case_name = "nudged-socrates-inithist-002-window"  # Change this to your case
     #image_dir = Path(f"plots/{case_name}/MERRA_T_minus_T/")
@@ -38,7 +38,7 @@ def main():
         pad = 0.02
         #time_idx = 5
 
-        lev_unit = h2i_ds.lev.units
+        lev_unit = h0a_ds.lev.units
         extent = [120, 175, -25, -75]  # adjust as needed
         # Lat/lon detection
         lat_name = next((dim for dim in h2i_init_ds.dims if 'lat' in dim.lower()), None)
