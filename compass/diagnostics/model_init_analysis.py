@@ -76,6 +76,7 @@ def main():
                 has_time(h0a_ds, target_time),
                 #has_time(h0a_ds.T, target_time)
                 ]):
+                print("NO TIMES EH")
                 return
 
             h2i_init_ds_sfc = h2i_init_ds[var_name].sel(lev=lev,method='nearest').sel(time=target_time)
