@@ -12,7 +12,7 @@ from pathlib import Path
 
 def load_colormap_from_csv(file_name, name=None):
     print("file_name",file_name)
-    with pkg_resources.open_text(colormaps, file_name) as f:
+    with pkg_resources.open_text(colormaps.csv, file_name) as f:
         print("f",f)
         reader = csv.reader(f)
         next(reader)  # Skip header
