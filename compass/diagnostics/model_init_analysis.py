@@ -22,18 +22,20 @@ def main():
 
     print(h0a_init_ds, h1a_init_ds, h2i_init_ds)
 
-    case_name = "F2000climo.f09_f09_mg17.window.exp.6hrInit.R13.002" #exp_casenames[3]
+    """case_name = "F2000climo.f09_f09_mg17.window.exp.6hrInit.R13.002" #exp_casenames[3]
     print(case_name)
     casenl_path = f"/glade/derecho/scratch/richling/cases/{case_name}/user_nl_cam"
     cam_path = f"/glade/derecho/scratch/richling/cases/{case_name}/run/"
     h0a_ds, h1a_ds, h2i_ds = get_cam_ds(casenl_path, cam_path)
 
-    print(h0a_ds, h1a_ds, h2i_ds)
+    print(h0a_ds, h1a_ds, h2i_ds)"""
+
+    merra_ds = xr.open_dataset('/glade/work/richling/cesm-diagnostics/COMPASS/merra2_12012017-02282018_fixed.nc')
 
 
     # Loop over time and lev indices
-    time_indices = range(len(h0a_ds['time'])) if 'time' in h0a_ds.dims else [None]
-    lev_indices = range(len(h0a_ds['lev'])) if 'lev' in h0a_ds.dims else [None]
+    time_indices = range(len(h0a_init_ds['time'])) if 'time' in h0a_init_ds.dims else [None]
+    lev_indices = range(len(h0a_init_ds['lev'])) if 'lev' in h0ah0a_init_ds_ds.dims else [None]
 
     #case_name = "nudged-socrates-inithist-002-window"  # Change this to your case
     #image_dir = Path(f"plots/{case_name}/MERRA_T_minus_T/")
@@ -48,7 +50,7 @@ def main():
         pad = 0.02
         #time_idx = 5
 
-        lev_unit = h0a_ds.lev.units
+        lev_unit = h0a_init_ds.lev.units
         extent = [120, 175, -25, -75]  # adjust as needed
         # Lat/lon detection
         lat_name = next((dim for dim in h2i_init_ds.dims if 'lat' in dim.lower()), None)
@@ -62,7 +64,7 @@ def main():
 
         def plot_map_multi_var_new(var_name, target_time, lev):
 
-            image_dir = Path(f"plots/{case_name}_vs_init_case/{var_name}/")
+            image_dir = Path(f"plots/init_case_vs_merra/{var_name}/")
             if not image_dir.is_dir():
                 image_dir.mkdir(parents=True)
                     
@@ -73,15 +75,15 @@ def main():
 
             if not all([
                 has_time(merra_ds, target_time),
-                has_time(h1a_ds, target_time),
+                has_time(h1a_init_ds, target_time),
                 #has_time(h0a_ds.T, target_time)
                 ]):
                 print("NO TIMES EH")
                 return
-            merra_ds = xr.open_dataset('/glade/work/richling/cesm-diagnostics/COMPASS/merra2_12012017-02282018_fixed.nc')
+
             merra_ds_sfc = merra_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
             #h1a_ds_sfc = h1a_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
-            h1a_target_ds_sfc = h1a_ds.Target_T.sel(lev=lev,method='nearest').sel(time=target_time)
+            h1a_target_ds_sfc = h1a_init_ds.Target_T.sel(lev=lev,method='nearest').sel(time=target_time)
             #h1a_nudge_ds_sfc = h1a_ds.Nudge_T.sel(lev=lev,method='nearest').sel(time=target_time)
             #h0a_ds_sfc = h0a_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
 
