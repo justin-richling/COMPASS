@@ -1,5 +1,6 @@
 import xarray as xr
 from compass.core.utils import load_and_search_user_nl
+from pathlib import Path
 def get_cam_ds(usernl_path,cam_path):
     search_text, full_text = load_and_search_user_nl(usernl_path,"fincl1lonlat")
     print(search_text)
@@ -15,10 +16,10 @@ def get_cam_ds(usernl_path,cam_path):
     
     
     #cam_path = Path(f"/glade/derecho/scratch/richling/cases/{case_name}/run/")
-    h1a_files = sorted(cam_path.glob("*h1a*00.nc"))
-    h2i_files = sorted(cam_path.glob("*h2i*00.nc"))
+    h1a_files = sorted(Path(cam_path).glob("*h1a*00.nc"))
+    h2i_files = sorted(Path(cam_path).glob("*h2i*00.nc"))
     #h0a_files = sorted(cam_path.glob("*h0a*00.nc"))
-    h0a_files = sorted(cam_path.glob("*h0a*00.nc"))
+    h0a_files = sorted(Path(cam_path).glob("*h0a*00.nc"))
     #nudge-socrates.cam.h0a_new_all.nc
     
     h2i_ds = xr.open_mfdataset(h2i_files, combine="nested", concat_dim="time")
