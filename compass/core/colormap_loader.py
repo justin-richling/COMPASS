@@ -11,6 +11,7 @@ from compass import colormaps  # this lets us access the files as package resour
 from pathlib import Path
 
 def load_colormap_from_csv(file_name, name=None):
+    print("file_name",file_name)
     with pkg_resources.open_text(colormaps, file_name) as f:
         reader = csv.reader(f)
         next(reader)  # Skip header
@@ -129,7 +130,7 @@ def register_colormaps():
                 name = path.stem
         print("csv names?",Path(path).parts[-1], name)
         try:
-            cmap = load_colormap_from_csv(Path(path).parts[-1], name)
+            cmap = load_colormap_from_csv(Path(path).parts[-1], name.replace(".cmap","").replace("_"," "))
             #cm.register_cmap(name, cmap)
             mpl.colormaps.register(cmap,name=name)
         except Exception as e:
