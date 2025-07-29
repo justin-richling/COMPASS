@@ -25,13 +25,6 @@ def main():
 
 
             scn = Scene(reader='ahi_hsd', filenames=files)
-            filename = f"{im_save_path}/{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png"
-
-            if not Path(filename).is_file:
-                print(f"Saved plot: {filename}")
-            else:
-                print(f"Skipped (already exists): {filename}")
-                continue
 
             if prod == "B13":
                 print("AHHHH")
@@ -40,6 +33,14 @@ def main():
                 scn.load(['B03'], calibration='radiance')  # Load in radiance units
             else:
                 scn.load([prod])
+
+            filename = f"{im_save_path}/{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png"
+
+            if not Path(filename).is_file:
+                print(f"Saved plot: {filename}")
+            else:
+                print(f"Skipped (already exists): {filename}")
+                continue
             #print(scn)
             #scn = scn.resample( resampler='native') #scn.min_area(),
 
