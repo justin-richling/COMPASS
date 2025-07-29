@@ -92,14 +92,19 @@ def main():
             #lev_part = f"_lev{lev_idx}" if lev_idx is not None else "_nolev"
             lev_r = int(lev)
             filename = f"{time_part}_{lev_r}hPa.png"
+
+            if not Path(image_dir).is_dir():
+                Path(image_dir).mkdir(parents=True)
+
             filepath = os.path.join(image_dir, filename)
-            
+            print("MODEL FILENAME:",filepath)
             if not Path(filepath).is_file:
                 print(f"Saved plot: {filepath}")
                 do_it = True
             else:
                 print(f"Skipped (already exists): {filepath}")
                 do_it = False
+            print()
 
             
             

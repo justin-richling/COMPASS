@@ -34,7 +34,7 @@ def main():
             else:
                 scn.load([prod])
 
-            filename = f"{im_save_path}/{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png"
+            filename = im_save_path / f"{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png"
 
             if not Path(filename).is_file:
                 print(f"Saved plot: {filename}")
