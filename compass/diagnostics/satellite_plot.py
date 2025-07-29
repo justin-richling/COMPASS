@@ -16,7 +16,7 @@ import cartopy.feature as cfeature
 
 def main():
 
-    def test_image(prods,im_save_path):
+    def test_image(prods, files, im_save_path):
         for prod in prods:
             print(prod)
             scn = Scene(reader='ahi_hsd', filenames=files)
@@ -217,8 +217,8 @@ def main():
             
             
             #scn.save_dataset(prod, filename=f"{var.attrs['start_time']:%Y-%m-%d %H%MZ}_{prod}.png")
-            #plt.savefig(f"{im_save_path}/{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png",bbox_inches='tight')
-            plt.savefig(f"{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png",bbox_inches='tight')
+            plt.savefig(f"{im_save_path}/{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png",bbox_inches='tight')
+            #plt.savefig(f"{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png",bbox_inches='tight')
             #plt.savefig('himawari_ahi_truecolor_{datetime}.png'.format(datetime=scn.start_time.strftime('%Y%m%d%H%M')),bbox_inches='tight')
             plt.close()
             #plt.show()
@@ -244,7 +244,7 @@ def main():
 
     files = load_satpy_scene("/glade/work/richling/cesm-diagnostics/COMPASS/data/himawari/")
     prod = ["B13", "true_color"]
-    test_image(prod,files,".")
+    test_image(prod,files,"plots/")
     #Image.open(f"2018_02_19_2300Z_{prod}.png")
 
 
