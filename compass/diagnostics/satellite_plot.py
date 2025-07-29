@@ -20,8 +20,8 @@ def main():
         for prod in prods:
             print(prod)
 
-            if not im_save_path.is_dir():
-                im_save_path.mkdir(parents=True)
+            if not Path(im_save_path).is_dir():
+                Path(im_save_path).mkdir(parents=True)
 
             filename = f"{im_save_path}/{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png"
 
