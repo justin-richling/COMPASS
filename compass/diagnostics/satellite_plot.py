@@ -249,7 +249,7 @@ def main():
 
     files = load_satpy_scene("/glade/work/richling/cesm-diagnostics/COMPASS/data/himawari/")
     prod = ["B13", "true_color"]
-    prod = ["B13"]
+    #prod = ["B13"]
     test_image(prod,files,"plots/")
     #Image.open(f"2018_02_19_2300Z_{prod}.png")
 
