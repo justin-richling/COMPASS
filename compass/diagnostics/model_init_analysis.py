@@ -98,7 +98,7 @@ def main():
 
             filepath = os.path.join(image_dir, filename)
             print("MODEL FILENAME:",filepath)
-            if not Path(filepath).is_file:
+            if not Path(filepath).is_file():
                 print(f"Saved plot: {filepath}")
                 do_it = True
             else:

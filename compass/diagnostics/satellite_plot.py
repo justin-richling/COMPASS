@@ -36,7 +36,7 @@ def main():
 
             filename = im_save_path / f"{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png"
 
-            if not Path(filename).is_file:
+            if not Path(filename).is_file():
                 print(f"Saved plot: {filename}")
             else:
                 print(f"Skipped (already exists): {filename}")
