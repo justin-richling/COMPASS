@@ -35,8 +35,8 @@ from compass.core.colormap_loader import register_colormaps
 def main():
     #register_colormaps()
 
-    from compass.diagnostics import satellite_plot
-    satellite_plot.main()
+    #from compass.diagnostics import satellite_plot
+    #satellite_plot.main()
 
     from compass.diagnostics import model_init_analysis
     model_init_analysis.main()
