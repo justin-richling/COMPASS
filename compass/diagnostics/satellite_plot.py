@@ -19,9 +19,9 @@ def main():
     def test_image(prods, files, im_save_path):
         for prod in prods:
             print(prod)
-
-            if not Path(im_save_path).is_dir():
-                Path(im_save_path).mkdir(parents=True)
+            im_save_path = Path(im_save_path)
+            if not im_save_path.is_dir():
+                im_save_path.mkdir(parents=True)
 
 
             scn = Scene(reader='ahi_hsd', filenames=files)
