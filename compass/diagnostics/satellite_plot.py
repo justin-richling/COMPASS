@@ -240,6 +240,11 @@ def main():
             return files
         except Exception as e:
             logging.error(f"Could not determine reader automatically: {e}")
+            from satpy.readers import config as reader_config
+
+            available_readers = reader_config.keys()
+            print(sorted(available_readers))
+
             raise
 
     files = load_satpy_scene("/glade/work/richling/cesm-diagnostics/COMPASS/data/himawari/")

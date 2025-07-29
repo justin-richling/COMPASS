@@ -81,9 +81,9 @@ def main():
                 print("NO TIMES EH")
                 return
 
-            merra_ds_sfc = merra_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
+            merra_ds_sfc = merra_ds[var_name].sel(lev=lev,method='nearest').sel(time=target_time)
             #h1a_ds_sfc = h1a_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
-            h1a_target_ds_sfc = h1a_init_ds.Target_T.sel(lev=lev,method='nearest').sel(time=target_time)
+            h1a_target_ds_sfc = h1a_init_ds[f"Target_{var_name}"].sel(lev=lev,method='nearest').sel(time=target_time)
             #h1a_nudge_ds_sfc = h1a_ds.Nudge_T.sel(lev=lev,method='nearest').sel(time=target_time)
             #h0a_ds_sfc = h0a_ds.T.sel(lev=lev,method='nearest').sel(time=target_time)
 
@@ -132,7 +132,7 @@ def main():
                 )
                 axes[0].set_title(f"CESM: Target_{var_name} @ {str(h1a_target_ds_sfc['time'].values)}\nlev={lev_r} {lev_unit}")
                 cbar = axes[0].figure.colorbar(c0cm, ax=axes[0], orientation='vertical', shrink=shrink, pad=pad)
-                cbar.set_label(f"({h1a_init_ds.T.attrs.get('units', '')})")
+                cbar.set_label(f"({h1a_init_ds[var_name].attrs.get('units', '')})")
 
 
 
@@ -149,7 +149,7 @@ def main():
                 axes[1].set_title(f"MERRA2: {var_name} @ {str(merra_ds_sfc['time'].values)}\nlev={lev_r} {lev_unit}")
                 # Custom colorbar matching height of axes
                 cbar = axes[1].figure.colorbar(mcm, ax=axes[1], orientation='vertical', shrink=shrink, pad=pad)
-                cbar.set_label(f"({merra_ds.T.attrs.get('units', '')})")
+                cbar.set_label(f"({merra_ds[var_name].attrs.get('units', '')})")
 
                 diff = h1a_target_ds_sfc - merra_ds_sfc
                 c0cm_target = diff.plot.pcolormesh(
@@ -197,15 +197,6 @@ def main():
             
                 plt.tight_layout()
                 fig.savefig(filepath, dpi=150)
-                #plt.show()
-                
-                # Filename
-
-                #time_part = f"{time_indices[time_idx]}" if time_idx is not None else "notime"
-                time_part = target_time.strftime("%Y_%m_%d_%H:00")
-                #lev_part = f"_lev{lev_idx}" if lev_idx is not None else "_nolev"
-                filename = f"{time_part}_{lev_r}hPa.png"
-                filepath = os.path.join(image_dir, filename)
                 
                 plt.close(fig)
         
