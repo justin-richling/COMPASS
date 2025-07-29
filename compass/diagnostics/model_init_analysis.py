@@ -210,7 +210,7 @@ def main():
     for time in h1a_init_ds['time'].values:
         for lev in h1a_init_ds.sel(lev=slice(700,1000))['lev'].values:
             for var in var_names:
-                image_dir = Path(f"plots/init_case_vs_merra/{var_name}/")
+                image_dir = Path(f"plots/init_case_vs_merra/{var}/")
                 if not image_dir.is_dir():
                     image_dir.mkdir(parents=True)
                 plot_map_multi_var_new(var, time, image_dir, lev=lev)
