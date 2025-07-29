@@ -45,6 +45,8 @@ def main():
     if len(sys.argv) < 2:
         print("No config file provided")
         #print(plt.colormaps())
+        import subprocess
+        subprocess.run(["jupyter", "notebook"])
         return
 
     config_path = sys.argv[1]
