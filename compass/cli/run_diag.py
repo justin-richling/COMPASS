@@ -35,8 +35,8 @@ from compass.core.colormap_loader import register_colormaps
 def main():
     #register_colormaps()
 
-    #from compass.diagnostics import satellite_plot
-    #satellite_plot.main()
+    from compass.diagnostics import satellite_plot
+    satellite_plot.main()
 
     from compass.diagnostics import model_init_analysis
     model_init_analysis.main()
@@ -45,8 +45,8 @@ def main():
     if len(sys.argv) < 2:
         print("No config file provided")
         #print(plt.colormaps())
-        import subprocess
-        subprocess.run(["jupyter", "notebook"])
+        #import subprocess
+        #subprocess.run(["jupyter", "notebook"])
         return
 
     config_path = sys.argv[1]
