@@ -1,76 +1,73 @@
 #!/usr/bin/env python3
 """
-Compare CESM nudged output to MERRA2 reanalysis at select levels and times.
-Generates side-by-side plots of temperature and humidity fields.
+Parallel plotting of CESM nudged case vs MERRA2 using Dask + multiprocessing.
+Targeted for NCAR Casper.
 
-Author: [Your Name or NCAR group]
+Author: [Your Name]
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import xarray as xr
 
-from ..core.io import get_cam_ds
 
+def plot_map(var, time_str, lev, h1a_path, merra_path, image_dir, extent, coords, lev_unit):
+    """Worker function: load slices, compute, and plot."""
+    # Reopen datasets (must reopen in each process)
+    h1a = xr.open_dataset(h1a_path, chunks={})
+    merra = xr.open_dataset(merra_path, chunks={})
 
-def has_time(da, time_val):
-    """Check if a specific time value exists in the dataset."""
-    return any(t == time_val for t in da['time'].values)
+    time = np.datetime64(time_str)
 
-
-def plot_map(var_name, target_time, lev, h1a_ds, merra_ds, image_dir, coords, extent, lev_unit, vmin=270, vmax=300):
-    """Plot CESM target, MERRA2, and their difference."""
-    time_str = target_time.strftime("%Y_%m_%d_%H:00")
-    lev_r = int(lev)
-    filename = f"{time_str}_{lev_r}hPa.png"
-    filepath = image_dir / filename
-    print("MODEL FILENAME:", filepath)
-
-    if filepath.is_file():
-        print(f"Skipped (already exists): {filepath}\n")
-        return
-
-    print(f"Saved plot: {filepath}\n")
-
-    # Data selection
-    merra_sfc = merra_ds[var_name].sel(lev=lev, method='nearest').sel(time=target_time)
-    target_sfc = h1a_ds[f"Target_{var_name}"].sel(lev=lev, method='nearest').sel(time=target_time)
+    target_sfc = h1a[f"Target_{var}"].sel(time=time, lev=lev, method='nearest').compute()
+    merra_sfc = merra[var].sel(time=time, lev=lev, method='nearest').compute()
     diff = target_sfc - merra_sfc
+
+    # Output filename
+    lev_r = int(lev)
+    filename = f"{time_str.replace(':','_')}_{lev_r}hPa.png"
+    filepath = Path(image_dir) / var / filename
+    if filepath.exists():
+        print(f"Skipped (already exists): {filepath}")
+        return
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Saving: {filepath}")
 
     # === Plotting ===
     fig, axes = plt.subplots(1, 3, figsize=(15, 5), subplot_kw={'projection': ccrs.PlateCarree()})
     shrink, pad = 0.625, 0.02
+    vmin, vmax = 270, 300
 
-    titles = [
-        f"CESM: Target_{var_name} @ {str(target_sfc['time'].values)}\nlev={lev_r} {lev_unit}",
-        f"MERRA2: {var_name} @ {str(merra_sfc['time'].values)}\nlev={lev_r} {lev_unit}",
-        f"CESM Target_{var_name} minus MERRA2 {var_name}\nlev={lev_r} {lev_unit}",
-    ]
-    datasets = [target_sfc, merra_sfc, diff]
-    cmaps = ["coolwarm"] * 3
-    vmaps = [(vmin, vmax), (vmin, vmax), (-10, 10)]
-
-    for ax, title, data, cmap, (vmin_, vmax_) in zip(axes, titles, datasets, cmaps, vmaps):
+    for ax, data, title, vmin_, vmax_ in zip(
+        axes,
+        [target_sfc, merra_sfc, diff],
+        [
+            f"CESM: Target_{var}\n{str(target_sfc['time'].values)} @ {lev_r} {lev_unit}",
+            f"MERRA2: {var}\n{str(merra_sfc['time'].values)} @ {lev_r} {lev_unit}",
+            f"CESM Target - MERRA2\n{var} @ {lev_r} {lev_unit}",
+        ],
+        [vmin, vmin, -10],
+        [vmax, vmax, 10]
+    ):
         pcm = data.plot.pcolormesh(
-            ax=ax, transform=ccrs.PlateCarree(), cmap=cmap,
+            ax=ax, transform=ccrs.PlateCarree(), cmap="coolwarm",
             vmin=vmin_, vmax=vmax_, add_colorbar=False, **coords
         )
-        ax.set_title(title)
-        cbar = fig.colorbar(pcm, ax=ax, orientation='vertical', shrink=shrink, pad=pad)
+        cbar = fig.colorbar(pcm, ax=ax, shrink=shrink, pad=pad)
         cbar.set_label(f"({data.attrs.get('units', '')})")
-
+        ax.set_title(title)
         ax.set_extent(extent, crs=ccrs.PlateCarree())
         ax.add_feature(cfeature.LAND, zorder=0)
         ax.add_feature(cfeature.COASTLINE)
         gl = ax.gridlines(draw_labels=True)
-        gl.right_labels = False
         gl.top_labels = False
-
-        # Nudge region box
+        gl.right_labels = False
         box = Rectangle((130, -65), 30, 30, linewidth=2,
                         edgecolor='black', facecolor='none', transform=ccrs.PlateCarree())
         ax.add_patch(box)
@@ -81,40 +78,48 @@ def plot_map(var_name, target_time, lev, h1a_ds, merra_ds, image_dir, coords, ex
 
 
 def main():
-    # Paths
+    import numpy as np
+
+    # === Input paths ===
     case_name = "nudged-socrates-inithist-004-window"
-    casenl_path = f"/glade/derecho/scratch/richling/{case_name}/user_nl_cam"
     run_path = Path(f"/glade/derecho/scratch/richling/{case_name}/run/")
+    h1a_path = run_path / "h1a.cam.h1.nc"  # adjust to actual file
     merra_path = "/glade/work/richling/cesm-diagnostics/COMPASS/merra2_12012017-02282018_fixed.nc"
 
-    # Load datasets
-    h0a, h1a, h2i = get_cam_ds(casenl_path, run_path)
-    merra = xr.open_dataset(merra_path)
-
-    var_names = ["T", "Q"]
+    # === Output settings ===
+    image_base_dir = Path("plots/init_case_vs_merra")
     extent = [120, 175, -25, -75]
-    lev_unit = h0a.lev.units
+    var_names = ["T", "Q"]
 
-    # Handle 2D lat/lon coordinates if necessary
-    lat_name = next((dim for dim in h2i.dims if 'lat' in dim.lower()), None)
-    lon_name = next((dim for dim in h2i.dims if 'lon' in dim.lower()), None)
+    # === Pre-open datasets with Dask (for metadata)
+    h1a_ds = xr.open_dataset(h1a_path, chunks={"time": 1})
+    merra_ds = xr.open_dataset(merra_path, chunks={"time": 1})
+
+    lev_unit = h1a_ds.lev.units
     coords = {}
-    if lat_name and lon_name and h2i[lat_name].ndim == 2:
-        coords['x'] = h2i[lon_name]
-        coords['y'] = h2i[lat_name]
+    lat_name = next((dim for dim in h1a_ds.dims if 'lat' in dim.lower()), None)
+    lon_name = next((dim for dim in h1a_ds.dims if 'lon' in dim.lower()), None)
+    if lat_name and lon_name and h1a_ds[lat_name].ndim == 2:
+        coords = {'x': h1a_ds[lon_name], 'y': h1a_ds[lat_name]}
 
-    for time in h1a['time'].values:
-        for lev in h1a.sel(lev=slice(700, 1000))['lev'].values:
-            if not all(has_time(ds, time) for ds in [h1a, merra]):
-                print(f"Time {time} not found in all datasets. Skipping.")
-                continue
+    times = h1a_ds.time.values
+    levs = h1a_ds.sel(lev=slice(700, 1000)).lev.values
 
-            for var in var_names:
-                image_dir = Path(f"plots/init_case_vs_merra/{var}/")
-                image_dir.mkdir(parents=True, exist_ok=True)
-                plot_map(var, time, lev, h1a, merra, image_dir, coords, extent, lev_unit)
+    # === Build task list ===
+    tasks = []
+    for var in var_names:
+        for time in times:
+            for lev in levs:
+                time_str = str(np.datetime_as_string(time, unit='h'))
+                tasks.append((var, time_str, float(lev), str(h1a_path), str(merra_path), str(image_base_dir), extent, coords, lev_unit))
 
-    print("All Done!")
+    print(f"Prepared {len(tasks)} plot tasks...")
+
+    # === Dispatch with multiprocessing ===
+    with ProcessPoolExecutor() as executor:
+        executor.map(lambda args: plot_map(*args), tasks)
+
+    print("All done!")
 
 
 if __name__ == "__main__":
