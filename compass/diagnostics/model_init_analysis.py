@@ -19,21 +19,27 @@ import numpy as np
 from ..core.io import get_cam_ds
 
 
-def plot_map(var, time_str, lev, h1a, merra_ds, image_dir, extent, coords, lev_unit):
+def plot_map(var, time, lev, h1a, merra_ds, image_dir, extent, coords, lev_unit):
     """Worker function: load slices, compute, and plot."""
     # Reopen datasets (must reopen in each process)
     #h1a = xr.open_dataset(h1a_path, chunks={})
     #merra = xr.open_dataset(merra_path, chunks={})
 
-    time = np.datetime64(time_str)
+    #time = np.datetime64(time_str)
 
     target_sfc = h1a[f"Target_{var}"].sel(time=time, lev=lev, method='nearest').compute()
     merra_sfc = merra_ds[var].sel(time=time, lev=lev, method='nearest').compute()
     diff = target_sfc - merra_sfc
 
     # Output filename
+    #lev_r = int(lev)
+    #filename = f"{str(time).replace(':','_')}_{lev_r}hPa.png"
+    
+    time_part = time.strftime("%Y_%m_%d_%H:00")
+    #lev_part = f"_lev{lev_idx}" if lev_idx is not None else "_nolev"
     lev_r = int(lev)
-    filename = f"{time_str.replace(':','_')}_{lev_r}hPa.png"
+    filename = f"{time_part}_{lev_r}hPa.png"
+
     filepath = Path(image_dir) / var / filename
     if filepath.exists():
         print(f"Skipped (already exists): {filepath}")
@@ -110,6 +116,7 @@ def main():
         coords = {'x': h0a_init_ds[lon_name], 'y': h0a_init_ds[lat_name]}
 
     times = h0a_init_ds.time.values
+    #h1a_init_ds['time'].values
     levs = h0a_init_ds.sel(lev=slice(700, 1000)).lev.values
 
     # === Build task list ===
@@ -117,8 +124,8 @@ def main():
     for var in var_names:
         for time in times:
             for lev in levs:
-                time_str = str(np.datetime_as_string(time, unit='h'))
-                tasks.append((var, time_str, float(lev), h1a_init_ds, merra_ds, str(image_base_dir), extent, coords, lev_unit))
+                #time_str = str(np.datetime_as_string(time, unit='h'))
+                tasks.append((var, time, float(lev), h1a_init_ds, merra_ds, str(image_base_dir), extent, coords, lev_unit))
 
     print(f"Prepared {len(tasks)} plot tasks...")
 
