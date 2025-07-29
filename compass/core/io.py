@@ -23,19 +23,19 @@ def get_cam_ds(usernl_path,cam_path):
     #nudge-socrates.cam.h0a_new_all.nc
     
     if h2i_files:
-        h2i_ds = xr.open_mfdataset(h2i_files, combine="nested", concat_dim="time")
+        h2i_ds = xr.open_mfdataset(h2i_files, combine="nested", concat_dim="time", chunks={"time": 1})
         h2i_ds = h2i_ds.sortby('time')
     else:
         h2i_ds = None
 
     if h1a_files:
-        h1a_ds = xr.open_mfdataset(h1a_files, combine="nested", concat_dim="time")
+        h1a_ds = xr.open_mfdataset(h1a_files, combine="nested", concat_dim="time", chunks={"time": 1})
         h1a_ds = h1a_ds.sortby('time')
     else:
         h1a_ds = None
     
     if h0a_files:
-        h0a_ds = xr.open_mfdataset(h0a_files, combine="nested", concat_dim="time")
+        h0a_ds = xr.open_mfdataset(h0a_files, combine="nested", concat_dim="time", chunks={"time": 1})
         h0a_ds = h0a_ds.sortby('time')
 
         # Rename the variables in the second dataset by removing the substring
