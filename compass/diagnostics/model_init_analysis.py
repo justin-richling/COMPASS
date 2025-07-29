@@ -172,12 +172,12 @@ def main():
 
     # --- Multiprocessing ---
     # Uncomment below to use multiprocessing for plotting
-    # with Pool() as pool:
-    #     pool.starmap(plot_map_multi_var_new, tasks)
+    with Pool() as pool:
+         pool.starmap(plot_map_multi_var_new, tasks)
 
     # --- Serial version ---
-    for args in tasks:
-        plot_map_multi_var_new(*args)
+    #for args in tasks:
+    #    plot_map_multi_var_new(*args)
 
     print("All Done!")
 
