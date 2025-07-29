@@ -23,17 +23,16 @@ def main():
             if not Path(im_save_path).is_dir():
                 Path(im_save_path).mkdir(parents=True)
 
+
+            scn = Scene(reader='ahi_hsd', filenames=files)
             filename = f"{im_save_path}/{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png"
 
             if not Path(filename).is_file:
                 print(f"Saved plot: {filename}")
-                do_it = True
             else:
                 print(f"Skipped (already exists): {filename}")
-                do_it = False
+                continue
 
-
-            scn = Scene(reader='ahi_hsd', filenames=files)
             if prod == "B13":
                 print("AHHHH")
                 scn.load(["B13"], calibration="brightness_temperature")
