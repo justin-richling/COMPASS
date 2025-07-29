@@ -94,7 +94,7 @@ def main():
             filename = f"{time_part}_{lev_r}hPa.png"
             filepath = os.path.join(image_dir, filename)
             
-            if not os.path.exists(filepath):
+            if not Path(filepath).is_file:
                 print(f"Saved plot: {filepath}")
                 do_it = True
             else:
