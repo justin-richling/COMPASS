@@ -231,7 +231,7 @@ def main():
             
             
             #scn.save_dataset(prod, filename=f"{var.attrs['start_time']:%Y-%m-%d %H%MZ}_{prod}.png")
-            plt.savefig(file_name,bbox_inches='tight')
+            plt.savefig(filename,bbox_inches='tight')
             #plt.savefig(f"{scn[prod].attrs['start_time']:%Y_%m_%d_%H%MZ}_{prod}.png",bbox_inches='tight')
             #plt.savefig('himawari_ahi_truecolor_{datetime}.png'.format(datetime=scn.start_time.strftime('%Y%m%d%H%M')),bbox_inches='tight')
             plt.close()
