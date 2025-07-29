@@ -206,12 +206,6 @@ def main():
                 #lev_part = f"_lev{lev_idx}" if lev_idx is not None else "_nolev"
                 filename = f"{time_part}_{lev_r}hPa.png"
                 filepath = os.path.join(image_dir, filename)
-            
-                if not os.path.exists(filepath):
-                    fig.savefig(filepath, dpi=150)
-                    print(f"Saved plot: {filepath}")
-                else:
-                    print(f"Skipped (already exists): {filepath}")
                 
                 plt.close(fig)
         
